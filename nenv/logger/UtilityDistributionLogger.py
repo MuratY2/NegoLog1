@@ -2,14 +2,12 @@ import warnings
 from nenv.Preference import domain_loader
 from nenv.BidSpace import BidSpace, BidPoint
 from nenv.logger.AbstractLogger import AbstractLogger, SessionLogs, Session, LogRow, ExcelLog
-from typing import Union
+from typing import Union, List
 from nenv.utils.tournament_graphs import plt, DRAWING_FORMAT
-from typing import List
 import numpy as np
 import os
 import matplotlib
 matplotlib.use('Agg')  # Agg backend for file-based rendering
-
 
 class UtilityDistributionLogger(AbstractLogger):
     """
@@ -32,22 +30,22 @@ class UtilityDistributionLogger(AbstractLogger):
                 opp_utility_b.append(log_row["AgentAUtility"])
 
         return {"UtilityDist": {
-            "MeanAgentUtilityA": np.mean(utility_a) if len(utility_a) > 0 else 0.,
-            "MeanAgentUtilityB": np.mean(utility_b) if len(utility_b) > 0 else 0.,
-            "MeanOpponentUtilityA": np.mean(opp_utility_a) if len(opp_utility_a) > 0 else 0.,
-            "MeanOpponentUtilityB": np.mean(opp_utility_b) if len(opp_utility_b) > 0 else 0.,
-            "StdAgentUtilityA": np.std(utility_a) if len(utility_a) > 0 else 0.,
-            "StdAgentUtilityB": np.std(utility_b) if len(utility_b) > 0 else 0.,
-            "StdOpponentUtilityA": np.std(opp_utility_a) if len(opp_utility_a) > 0 else 0.,
-            "StdOpponentUtilityB": np.std(opp_utility_b) if len(opp_utility_b) > 0 else 0.,
-            "MaxAgentUtilityA": np.max(utility_a) if len(utility_a) > 0 else 0.,
-            "MaxAgentUtilityB": np.max(utility_b) if len(utility_b) > 0 else 0.,
-            "MaxOpponentUtilityA": np.max(opp_utility_a) if len(opp_utility_a) > 0 else 0.,
-            "MaxOpponentUtilityB": np.max(opp_utility_b) if len(opp_utility_b) > 0 else 0.,
-            "MinAgentUtilityA": np.min(utility_a) if len(utility_a) > 0 else 0.,
-            "MinAgentUtilityB": np.min(utility_b) if len(utility_b) > 0 else 0.,
-            "MinOpponentUtilityA": np.min(opp_utility_a) if len(opp_utility_a) > 0 else 0.,
-            "MinOpponentUtilityB": np.min(opp_utility_b) if len(opp_utility_b) > 0 else 0.,
+            "MeanAgentUtilityA": np.mean(utility_a) if utility_a else 0.0,
+            "MeanAgentUtilityB": np.mean(utility_b) if utility_b else 0.0,
+            "MeanOpponentUtilityA": np.mean(opp_utility_a) if opp_utility_a else 0.0,
+            "MeanOpponentUtilityB": np.mean(opp_utility_b) if opp_utility_b else 0.0,
+            "StdAgentUtilityA": np.std(utility_a) if utility_a else 0.0,
+            "StdAgentUtilityB": np.std(utility_b) if utility_b else 0.0,
+            "StdOpponentUtilityA": np.std(opp_utility_a) if opp_utility_a else 0.0,
+            "StdOpponentUtilityB": np.std(opp_utility_b) if opp_utility_b else 0.0,
+            "MaxAgentUtilityA": np.max(utility_a) if utility_a else 0.0,
+            "MaxAgentUtilityB": np.max(utility_b) if utility_b else 0.0,
+            "MaxOpponentUtilityA": np.max(opp_utility_a) if opp_utility_a else 0.0,
+            "MaxOpponentUtilityB": np.max(opp_utility_b) if opp_utility_b else 0.0,
+            "MinAgentUtilityA": np.min(utility_a) if utility_a else 0.0,
+            "MinAgentUtilityB": np.min(utility_b) if utility_b else 0.0,
+            "MinOpponentUtilityA": np.min(opp_utility_a) if opp_utility_a else 0.0,
+            "MinOpponentUtilityB": np.min(opp_utility_b) if opp_utility_b else 0.0,
         }}
 
     def on_tournament_end(self, tournament_logs: ExcelLog, agent_names: List[str], domain_names: List[str],
@@ -59,16 +57,16 @@ class UtilityDistributionLogger(AbstractLogger):
             os.makedirs(self.get_path("domains/"))
 
         for domain in domain_names:
-            domain_name = "Domain%s" % domain
-            domain_dir = self.get_path("domains/%s/" % domain_name)
+            domain_name = f"Domain{domain}"
+            domain_dir = self.get_path(f"domains/{domain_name}/")
 
             if not os.path.exists(domain_dir):
                 os.makedirs(domain_dir)
 
             self.draw_agent_opponent_utility(tournament_logs, agent_names, domain_dir, True, domain)
 
-    def draw_agent_opponent_utility(self, tournament_logs: ExcelLog, agent_names: list, directory: str,
-                                    draw_pareto: bool, target_domain_id: Union[str | None] = None):
+    def draw_agent_opponent_utility(self, tournament_logs: ExcelLog, agent_names: List[str], directory: str,
+                                    draw_pareto: bool, target_domain_id: Union[str, None] = None):
         agent_mean_utilities = {}
         opponent_mean_utilities = {}
 
@@ -79,8 +77,6 @@ class UtilityDistributionLogger(AbstractLogger):
         opponent_max_utilities = {}
 
         csv_infos = []
-
-        domain_id = -1
 
         for agent_name in agent_names:
             agent_mean_utilities[agent_name] = []
@@ -188,7 +184,7 @@ class UtilityDistributionLogger(AbstractLogger):
                 f.write(str(info_row["AgentMaxUtility"]) + ";\n")
 
     @staticmethod
-    def get_pareto_nash_kalai(domain_no: str) -> (np.ndarray, BidPoint, BidPoint):
+    def get_pareto_nash_kalai(domain_no: str) -> tuple[np.ndarray, BidPoint, BidPoint]:
         preference_A, preference_B = domain_loader(domain_no)
 
         bid_space = BidSpace(preference_A, preference_B)

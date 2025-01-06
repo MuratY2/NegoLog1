@@ -1,18 +1,16 @@
-# agents/Group4/Group4.py
-
 from typing import Union
 import nenv
 from nenv import Action, Bid
 from .acceptance_strategy import acceptance_strategy
 from .bidding_strategy import bidding_strategy
-from .opponent_model import create_opponent_model, update_opponent_model
+from .opponent_model import OpponentModel
 
 class Group4(nenv.AbstractAgent):
     """
     This agent demonstrates:
       - A custom acceptance strategy
       - A custom bidding strategy
-      - A mild twist on the ClassicFrequencyOpponentModel (time decay)
+      - An frequency-based opponent model with time decay
     """
 
     @property
@@ -27,8 +25,8 @@ class Group4(nenv.AbstractAgent):
         Called at the start of each negotiation session.
         We'll create or reset anything here.
         """
-        # Use ClassicFrequencyOpponentModel as a base:
-        self.opponent_model = create_opponent_model(self.preference)
+        # Use the OpponentModel with time decay:
+        self.opponent_model = OpponentModel(self.preference)
 
         # Optional: store the opponent's name
         self.opponent_name = opponent_name
@@ -40,7 +38,7 @@ class Group4(nenv.AbstractAgent):
     # 2) OPPONENT MODEL UPDATE
     # ---------------------------------------------------------
     def update_opponent_model(self, bid: Bid, t: float):
-        update_opponent_model(self.opponent_model, bid, t)
+        self.opponent_model.update(bid, t)
 
     # ---------------------------------------------------------
     # 3) ACCEPTANCE STRATEGY
