@@ -1,3 +1,5 @@
+# agents/Group4/Group4.py
+
 from typing import Union
 import nenv
 from nenv import Action, Bid
@@ -10,7 +12,7 @@ class Group4(nenv.AbstractAgent):
     This agent demonstrates:
       - A custom acceptance strategy
       - A custom bidding strategy
-      - An frequency-based opponent model with time decay
+      - A frequency-based opponent model with time decay
     """
 
     @property
