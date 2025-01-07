@@ -49,11 +49,11 @@ class Group4(nenv.AbstractAgent):
             self.my_reservation
         )
 
-    # 5) receive_offer (hook)
+    # 5) receive_offer 
     def receive_offer(self, bid: Bid, t: float):
         self.update_opponent_model(bid, t)
 
-    # 6) act (hook)
+    # 6) act 
     def act(self, t: float) -> Action:
         last_bid=self.last_received_bids[-1] if self.last_received_bids else None
 
