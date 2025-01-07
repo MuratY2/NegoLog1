@@ -23,10 +23,6 @@ class Group4(nenv.AbstractAgent):
     # 1) INITIATION
     # ---------------------------------------------------------
     def initiate(self, opponent_name: Union[None, str]):
-        """
-        Called at the start of each negotiation session.
-        We'll create or reset anything here.
-        """
         # Use the OpponentModel with time decay:
         self.opponent_model = OpponentModel(self.preference)
 
