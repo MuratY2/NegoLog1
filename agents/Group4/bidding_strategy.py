@@ -26,7 +26,7 @@ def bidding_strategy(
     :param my_reservation: The agent's reservation value
     :return: A single bid
     """
-    alpha = 0.7
+    alpha = 0.9
 
     # Time-based target for self utility
     target = 0.6 + 0.4 * (math.e ** (-2.0 * t))

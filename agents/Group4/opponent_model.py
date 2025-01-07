@@ -13,7 +13,7 @@ class OpponentModel(AbstractOpponentModel):
     - Dynamically updates issue and value weights.
     """
 
-    def __init__(self, reference: Preference, decay_factor: float = 0.95):
+    def __init__(self, reference: Preference, decay_factor: float = 0.99):
         
         super().__init__(reference)
 
